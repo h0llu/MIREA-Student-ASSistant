@@ -1,4 +1,4 @@
-import  telebot
+import telebot
 import Users # здесь происходят все операции с данными о пользователях
 
 bot = telebot.TeleBot('ТОКЕН')
@@ -10,6 +10,5 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def answer_to_text(message):
     user = Users.check(message.from_user.id)
-
 
 bot.polling()
