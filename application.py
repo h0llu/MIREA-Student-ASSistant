@@ -1,7 +1,7 @@
-from keyboard import Keyboard
-from config import TOKEN
-from config import States
-from dbworker import Users # Состояние пользователя в дереве диалогов
+from keyboard import Keyboard # Выкладки кнопок для разных узлов диалогов
+from config import TOKEN # Токен бота
+from config import States # Возможные состояния пользователей в дереве диалогов
+from dbworker import Users # Таблица с состояниями пользователей в дереве диалогов
 import telebot
 
 # Создание бота и таблицы состояний
