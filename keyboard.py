@@ -2,10 +2,6 @@ import telebot
 
 # Класс для хранения всех кнопок в каждом из узлов дерева диалогов
 class Keyboard:
-    # Храним телебота, чтобы создавать Markup'ы
-    def __init__(self, bot):
-        self.bot = bot
-
     # Кнопки главного меню
     def start_menu(self):
         markup = telebot.types.ReplyKeyboardMarkup(True, False)
@@ -30,6 +26,8 @@ class Keyboard:
         markup.row('Крестики-нолики')
         markup.row('Морской бой')
         markup.row('Ещё что-нибудь')
+        markup.row('Вернуться назад')
+        markup.row('Главное меню')
         return markup
 
     # Стандартные кнопки для узлов диалога, где нужно писать текст
