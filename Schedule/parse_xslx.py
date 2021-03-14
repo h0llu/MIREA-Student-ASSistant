@@ -28,7 +28,7 @@ def parse():
 # находит колонку с определенной группой
 # передает на вход parse_group()
 def parse_file(schedule_db, path):
-    # print(path)
+    print(path)
     book = xlrd.open_workbook(path)
     sheet = book.sheet_by_index(0)
 
@@ -37,7 +37,7 @@ def parse_file(schedule_db, path):
         # а еще обязательно нужно дописать в название группы какое-нибудь говно (в некоторых файлах)
         # приходится находить колонку с группой по регулярке
         if re.match(r'[А-Я]{4}-[0-9]{2}-[0-9]{2}', str(sheet.cell_value(rowx=1, colx=col))):
-            # print(sheet.cell_value(rowx=1, colx=col))
+            print(sheet.cell_value(rowx=1, colx=col))
             parse_group(schedule_db, sheet, col)
 
 # парсит колонку с группой, которую передала parse_file()
@@ -65,8 +65,8 @@ def parse_group(schedule_db, sheet, group_col):
 
     # создаем новую таблицу под группу
     cursor.execute(f'''CREATE TABLE {group}
-    (lesson_weekday TEXT NOT NULL,
-    lesson_weektype TEXT NOT NULL,
+    (lesson_weekday INTEGER NOT NULL,
+    lesson_weektype INTEGER NOT NULL,
     lesson_title TEXT NOT NULL,
     lesson_type TEXT NOT NULL,
     lesson_order INTEGER NOT NULL,
@@ -85,7 +85,7 @@ def parse_group(schedule_db, sheet, group_col):
         # и записываем в таблицу группы
         if sheet.cell_value(rowx=i, colx=group_col) != '':
             weekday = get_weekday_by_row(row=i)
-            weektype = 1 if sheet.cell_value(rowx=i, colx=4) == 'I' else 2
+            weektype = 1 if sheet.cell_value(rowx=i, colx=4) == 'I' else 0
             title = sheet.cell_value(rowx=i, colx=group_col)
             type = sheet.cell_value(rowx=i, colx=group_col + 1)
             order = get_order_by_row(row=i)
@@ -95,19 +95,20 @@ def parse_group(schedule_db, sheet, group_col):
     con.commit()
 
 # находит день недели по текущей строке (исходя из файлов расписания)
+# 0 - понедельник, 6 - воскресенье (как в datetime)
 def get_weekday_by_row(row):
     if row < 15:
-        return 'Понедельник'
+        return 0
     if row < 27:
-        return 'Вторник'
+        return 1
     if row < 39:
-        return 'Среда'
+        return 2
     if row < 51:
-        return 'Четверг'
+        return 3
     if row < 63:
-        return 'Пятница'
+        return 4
     if row < 75:
-        return 'Суббота'
+        return 5
 
 # т.к. в некоторых файлах столбец А пропущен (СПАСИБО, МИРЭА)
 # приходится номер пары искать по столбцу
@@ -128,4 +129,4 @@ def get_order_by_row(row):
         return 6
 
 
-# parse()
+parse()

@@ -6,6 +6,7 @@ class Users:
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
+        cursor.execute('DELETE FROM Users')
         cursor.execute('''CREATE TABLE IF NOT EXISTS Users
                     (id INTEGER NOT NULL PRIMARY KEY,
                     state INTEGER NOT NULL)
@@ -13,7 +14,6 @@ class Users:
         con.commit()
 
     def set_state(self, user_id, state):
-        print('set state', state)
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
         cursor.execute('INSERT OR REPLACE INTO Users VALUES (?,?)', [user_id, state])
@@ -24,8 +24,13 @@ class Users:
         cursor = con.cursor()
         cursor.execute(f'SELECT state FROM Users WHERE id = {user_id}')
         con.commit()
-        state = cursor.fetchone()[0]
-        return state
+        return cursor.fetchone()[0]
+
+    def is_user(self, user_id):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT * FROM Users WHERE id = {user_id}')
+        return cursor.fetchone() is not None
 
 # Хранит ID пользователя и группы, на которые он подписан
 class Users_subs:
@@ -62,22 +67,7 @@ class Users_subs:
 # вид занятия, номер пары, аудитория, преподаватель)
 class Schedule:
     __path__ = 'Databases/Schedule.db'
-    def set_lesson(self, group, weekday, weektype, title, type, order, classroom, teacher):
-        group = group.replace('-', '_')
-        con = sqlite3.connect(self.__path__)
-        cursor = con.cursor()
-        cursor.execute(f'''CREATE TABLE IF NOT EXISTS {group}
-        (lesson_weekday TEXT NOT NULL,
-        lesson_weektype TEXT NOT NULL,
-        lesson_title TEXT NOT NULL,
-        lesson_type TEXT NOT NULL,
-        lesson_order INTEGER NOT NULL,
-        lesson_classroom TEXT NOT NULL,
-        lesson_teacher TEXT NOT NULL)
-        ''')
-        cursor.execute(f'INSERT INTO {group} VALUES (?,?,?,?,?,?,?)', [weekday, weektype, title, type, order, classroom, teacher])
-        con.commit()
-
+    curr_group_name = ''
     def get_con_cursor(self):
         con = sqlite3.connect(self.__path__)
         return con, con.cursor()
@@ -85,14 +75,15 @@ class Schedule:
     def get_lesson(self, group, weekday, weektype):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'''SELECT * FROM {group} WHERE
+        cursor.execute(f'''SELECT * FROM {group.replace('-', '_')} WHERE
         ( lesson_weekday = {weekday} AND lesson_weektype = {weektype})''')
-        return cursor.fetchall()
+        print(cursor.fetchall())
+        # return cursor.fetchall()
 
     def is_valid_group(self, group):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'SELECT * FROM {group}')
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE name= '{group.replace('-', '_')}'")
         if len(cursor.fetchall()) != 0:
             return True
         return False
