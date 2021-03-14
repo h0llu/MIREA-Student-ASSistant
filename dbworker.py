@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, os
 
 # Хранит ID пользователя и его состояние в дереве диалогов
 class Users:
@@ -41,7 +41,7 @@ class Users_subs:
     def set_group(self, id, group):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('INSERT OR REPLACE INTO Groups VALUES (?, ?)', [id, group])
+        cursor.execute('INSERT OR REPLACE INTO Groups VALUES (?,?)', [id, group])
         con.commit()
 
     def get_groups(self, id):
@@ -58,34 +58,49 @@ class Users_subs:
         con.commit()
 
 # Хранит расписание в виде
-# (имя группы, дата, названия предмета, номер пары, аудитория, преподаватель)
+# (имя группы, день недели, вид недели, названия предмета,
+# вид занятия, номер пары, аудитория, преподаватель)
 class Schedule:
     __path__ = 'Databases/Schedule.db'
-    def init(self):
+    def set_lesson(self, group, weekday, weektype, title, type, order, classroom, teacher):
+        group = group.replace('-', '_')
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS Schedule
-        (group TEXT NOT NULL,
-        date TEXT NOT NULL,
-        title TEXT NOT NULL,
-        order INTEGER NOT NULL,
-        classroom TEXT NOT NULL,
-        teacher TEXT NOT NULL)''')
+        cursor.execute(f'''CREATE TABLE IF NOT EXISTS {group}
+        (lesson_weekday TEXT NOT NULL,
+        lesson_weektype TEXT NOT NULL,
+        lesson_title TEXT NOT NULL,
+        lesson_type TEXT NOT NULL,
+        lesson_order INTEGER NOT NULL,
+        lesson_classroom TEXT NOT NULL,
+        lesson_teacher TEXT NOT NULL)
+        ''')
+        cursor.execute(f'INSERT INTO {group} VALUES (?,?,?,?,?,?,?)', [weekday, weektype, title, type, order, classroom, teacher])
         con.commit()
 
-    def set_lesson(self, group, date, title, order, classroom, teacher):
+    def get_con_cursor(self):
         con = sqlite3.connect(self.__path__)
-        cursor = con.cursor()
-        cursor.execute('INSERT OR REPLACE INTO Schedule VALUES (?, ?, ?, ?, ?, ?)',
-        [group, date, title, order, classroom, teacher])
-        con.commit()
+        return con, con.cursor()
 
-    def get_lesson(self, group, date):
+    def get_lesson(self, group, weekday, weektype):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'SELECT * FROM Schedule WHERE ( group = {group} AND date = {date} )')
-        con.commit()
+        cursor.execute(f'''SELECT * FROM {group} WHERE
+        ( lesson_weekday = {weekday} AND lesson_weektype = {weektype})''')
         return cursor.fetchall()
+
+    def is_valid_group(self, group):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT * FROM {group}')
+        if len(cursor.fetchall()) != 0:
+            return True
+        return False
+
+    def delete_all_tables(self):
+        if os.path.exists(self.__path__):
+            os.remove(self.__path__)
+
 
 # Хранит имя преподавателя и его описание
 class Professors:
@@ -101,7 +116,7 @@ class Professors:
     def set_description(self, name, description):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('INSERT OR REPLACE INTO Professors VALUES (?, ?)', [name, description])
+        cursor.execute('INSERT OR REPLACE INTO Professors VALUES (?,?)', [name, description])
         con.commit()
 
     def add_description(self, name, add):
@@ -110,7 +125,7 @@ class Professors:
         cursor.execute(f'SELECT description FROM Professors WHERE name = {name}')
         description = cursor.fetchone()[0]
         description += '\n' + add
-        cursor.execute('INSERT OR REPLACE INTO Professors VALUES (?, ?)', [name, description])
+        cursor.execute('INSERT OR REPLACE INTO Professors VALUES (?,?)', [name, description])
         con.commit()
 
     def get_description(self, name):
@@ -127,15 +142,15 @@ class Victoria:
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS Victoria
-        (name TEXT NOT NULL PRIMARY KEY,
-        price INTEGER NOT NULL,
-        weight INTEGER NOT NULL)''')
+                    (name TEXT NOT NULL PRIMARY KEY,
+                    price INTEGER NOT NULL,
+                    weight INTEGER NOT NULL)''')
         con.commit()
 
     def set_food(self, name, price, weight):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('INSERT OR REPLACE INTO Victoria VALUES (?, ?, ?)', [name, price, weight])
+        cursor.execute('INSERT OR REPLACE INTO Victoria VALUES (?,?,?)', [name, price, weight])
         con.commit()
 
     def get_food(self, name):
