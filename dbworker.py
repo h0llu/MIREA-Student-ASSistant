@@ -67,23 +67,59 @@ class Users_subs:
 # вид занятия, номер пары, аудитория, преподаватель)
 class Schedule:
     __path__ = 'Databases/Schedule.db'
-    curr_group_name = ''
+    __group__ = ''
     def get_con_cursor(self):
         con = sqlite3.connect(self.__path__)
         return con, con.cursor()
 
-    def get_lesson(self, group, weekday, weektype):
+    def set_group(self, group):
+        group = group.replace('.', '_').replace('-', '_').replace('/', '_')
+        self.__group__ = group.replace(' ', '_').replace('(', '_').replace(')', '_')
+
+    def set_lessons(self, len, group,
+    weekdays, weektypes, titles, types, orders, classrooms, teachers):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'''SELECT * FROM {group.replace('-', '_')} WHERE
+
+        group = group.replace(',', '').replace('.', '_').replace('-', '_').replace('\n', '_')
+        group = group.replace(' ', '_').replace('(', '_').replace(')', '_').replace('/', '_')
+
+        # создаем новую таблицу под группу
+        cursor.execute(f'''CREATE TABLE IF NOT EXISTS {group}
+        (lesson_weekday INTEGER NOT NULL,
+        lesson_weektype INTEGER NOT NULL,
+        lesson_title TEXT NOT NULL,
+        lesson_type TEXT,
+        lesson_order INTEGER NOT NULL,
+        lesson_classroom TEXT,
+        lesson_teacher TEXT)
+        ''')
+
+        # открываем транзакцию
+        cursor.execute('BEGIN TRANSACTION')
+        for i in range(0, len):
+            cursor.execute(f'INSERT INTO {group} VALUES (?,?,?,?,?,?,?)', 
+            [weekdays[i], weektypes[i], titles[i],
+            types[i], orders[i], classrooms[i], teachers[i]])
+
+        # завершаем транзакцию
+        cursor.execute('COMMIT')
+
+    def get_lesson(self, weekday, weektype):
+        if self.curr_group_name == '':
+            return
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'''SELECT * FROM {self.curr_group_name} WHERE
         ( lesson_weekday = {weekday} AND lesson_weektype = {weektype})''')
-        print(cursor.fetchall())
-        # return cursor.fetchall()
+        return cursor.fetchall()
 
     def is_valid_group(self, group):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f"SELECT name FROM sqlite_master WHERE name= '{group.replace('-', '_')}'")
+        group = group.replace('.', '_').replace('-', '_').replace('/', '_')
+        group = group.replace(' ', '_').replace('(', '_').replace(')', '_')
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE name = '{group}'")
         if len(cursor.fetchall()) != 0:
             return True
         return False
