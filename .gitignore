@@ -1,5 +1,5 @@
 config.py
-*.db
+Databases/
 **/__pycache__
 Excels/
-Schedule/xsl_paths
+xlsx_paths
