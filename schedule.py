@@ -3,9 +3,8 @@ from bs4 import BeautifulSoup # парсинг HTML-страницы с расп
 import xlrd # парсинг .xlsx файлов
 
 class Schedule:
-    # при валидации сохраняем путь к файлу и колонку с группой
+    # при валидации сохраняем колонку с группой
     # чтобы потом не искать их заново
-    __xlsx_path__ = ''
     __group_col__ = 0
 
     # удаляет уже имеющиеся файлы с расписанием
@@ -57,28 +56,39 @@ class Schedule:
             # будем сохранять файлы разных факультетов в разные папки
             # папки будут называться по первой букве групп
             # которые учатся на этом факультете
-            first_letter = ''
+            new_name = ''
             
             if 'ИИНТЕГУ' in link:
-                first_letter = 'Г'
+                new_name = 'Г'
             elif 'ИИТ' in link:
-                first_letter = 'И'
+                new_name = 'И'
             elif 'КБиСП' in link:
-                first_letter = 'Б'
+                new_name = 'Б'
             elif 'ИК' in link:
-                first_letter = 'К'
+                new_name = 'К'
             elif 'ИРТС' in link:
-                first_letter = 'Р'
+                new_name = 'Р'
             elif 'ИТХТ' in link:
-                first_letter = 'Х'
+                new_name = 'Х'
             elif 'ИЭП' in link:
-                first_letter = 'У'
-            elif 'ФТИ' in link:
-                first_letter = 'Э'
+                new_name = 'У'
             elif 'ФТИ_Стромынка' in link:
-                first_letter = 'Т'
+                new_name = 'Т'
+            elif 'ФТИ' in link:
+                new_name = 'Э'
 
-            path = 'Excels/' + first_letter + '/' + link[link.rfind('/') + 1:]
+            if '1к' in link or '1 курс' in link:
+                new_name += '20'
+            elif '2к' in link or '2 курс' in link:
+                new_name += '19'
+            elif '3к' in link or '3 курс' in link:
+                new_name += '18'
+            elif '4к' in link or '4 курс' in link:
+                new_name += '17'
+            elif '5к' in link or '5 курс' in link:
+                new_name += '16'
+
+            path = 'Excels/' + new_name + '.xlsx'
             paths.write(path + '\n')
             f = open(path, 'wb')
             resp = requests.get(link)
@@ -94,11 +104,9 @@ class Schedule:
         s = ''
         s.find
         for path in paths:
-            if group[0] == path[path.find('/') + 1]:
-                sheet = xlrd.open_workbook(path[:-1]).sheet_by_index(0)
+                sheet = xlrd.open_workbook(f'Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
                 for col in range(0, sheet.ncols):
                     if group in str(sheet.cell_value(1, col)):
-                        self.__xlsx_path__ = path[:-1]
                         self.__group_col__ = col
                         return True
         
@@ -106,23 +114,15 @@ class Schedule:
     
     # найти группу среди файлов
     def get_group(self, group, weekday, weektype):
-        sheet = xlrd.open_workbook(self.__xlsx_path__).sheet_by_index(0)
-        # на всякий случай проверим
+        sheet = xlrd.open_workbook(f'Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
+        # на всякий случай проверим, верно ли введена группа
         assert group in str(sheet.cell_value(1, self.__group_col__)), \
                 f'{group} not in {str(sheet.cell_value(rowx=1, colx=self.__group_col__))}'
-        # выберем нужные строки по дню недели
-        start, end = {
-            0: (3, 15),
-            1: (15, 27),
-            2: (27, 39),
-            3: (39, 51),
-            4: (51, 63),
-            5: (63, 75)}.get(weekday)
 
         # информация для вывода
         lessons = []
 
-        for i in range(start, end):
+        for i in range(weekday * 12 + 3, weekday * 12 + 15):
             # находим соответствующую неделю и непустую ячейку
             if sheet.cell_value(i, self.__group_col__) != '' and \
                 weektype == i % 2:
@@ -158,3 +158,4 @@ class Schedule:
             result += output
 
         return result
+
