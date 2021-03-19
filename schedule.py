@@ -1,11 +1,11 @@
 import requests # запросы на сайт с расписанием
-from bs4 import BeautifulSoup # парсинг HTML-страницы с расписанием
 import xlrd # парсинг .xlsx файлов
+import os # есть ли файл с такой группой
+from bs4 import BeautifulSoup # парсинг HTML-страницы с расписанием
+from dbworker import Schedule_last_request # для хранения последней запрошенной группы
 
 class Schedule:
-    # при валидации сохраняем колонку с группой
-    # чтобы потом не искать их заново
-    __group_col__ = 0
+    schedule_db = Schedule_last_request()
 
     # удаляет уже имеющиеся файлы с расписанием
     # скачивает новые
@@ -99,45 +99,51 @@ class Schedule:
     # есть есть, тогда сохраним колонку, чтобы потом заново не искать её
     # если нет, тогда либо нет такой группы
     # либо это тупые аспирантики, либо это группы-дубликаты (в разных корпусах с одним названием)
-    def is_valid_group(self, group) -> bool:
-        paths = open('xlsx_paths', 'r')
-        s = ''
-        s.find
-        for path in paths:
-                sheet = xlrd.open_workbook(f'Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
-                for col in range(0, sheet.ncols):
-                    if group in str(sheet.cell_value(1, col)):
-                        self.__group_col__ = col
-                        return True
-        
+    def is_valid_group(self, user_id, group) -> bool:
+        path = f'Excels/{group[0]}{group[-2:]}.xlsx'
+        if not os.path.exists(path):
+            return False
+        sheet = xlrd.open_workbook(path).sheet_by_index(0)
+        for col in range(0, sheet.ncols):
+            if group in str(sheet.cell_value(1, col)):
+                self.schedule_db.set_group(user_id, group, col)
+                return True
         return False
     
     # найти группу среди файлов
-    def get_group(self, group, weekday, weektype):
+    def __find__(self, group, group_col, weekday, weektype):
         sheet = xlrd.open_workbook(f'Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
         # на всякий случай проверим, верно ли введена группа
-        assert group in str(sheet.cell_value(1, self.__group_col__)), \
-                f'{group} not in {str(sheet.cell_value(rowx=1, colx=self.__group_col__))}'
+        assert group in str(sheet.cell_value(1, group_col)), \
+                f'{group} not in {str(sheet.cell_value(rowx=1, colx=group_col))}'
 
         # информация для вывода
         lessons = []
 
         for i in range(weekday * 12 + 3, weekday * 12 + 15):
             # находим соответствующую неделю и непустую ячейку
-            if sheet.cell_value(i, self.__group_col__) != '' and \
+            if sheet.cell_value(i, group_col) != '' and \
                 weektype == i % 2:
                 lesson = {}
                 lesson['lesson_order'] = ((i - 3) % 12) // 2 + 1
-                lesson['lesson_classroom'] = sheet.cell_value(i, self.__group_col__ + 3).replace('\n', ' ')
-                lesson['lesson_type'] = sheet.cell_value(i, self.__group_col__ + 1).replace('\n', ' ')
-                lesson['lesson_title'] = sheet.cell_value(i, self.__group_col__).replace('\n', ' ')
-                lesson['lesson_teacher'] = sheet.cell_value(i, self.__group_col__ + 2).replace('\n', ' ')
+                lesson['lesson_classroom'] = sheet.cell_value(i, group_col + 3).replace('\n', ' ')
+                lesson['lesson_type'] = sheet.cell_value(i, group_col + 1).replace('\n', ' ')
+                lesson['lesson_title'] = sheet.cell_value(i, group_col).replace('\n', ' ')
+                lesson['lesson_teacher'] = sheet.cell_value(i, group_col + 2).replace('\n', ' ')
                 lessons.append(lesson)
         
         return lessons
 
-    def display_schedule(self, group, weekday, weektype):
-        lessons = self.get_group(group, weekday, weektype)
+    # возвращает строку для вывода в чате
+    # расписание на день weekday (weektype неделя)
+    def get_schedule(self, user_id, weekday, weektype):
+        # если weekday - воскресенье
+        if weekday == 6:
+            return 'Выходной день'
+
+        lessons = self.__find__(self.schedule_db.get_group(user_id),
+                                self.schedule_db.get_col(user_id),
+                                weekday, weektype)
     
         if len(lessons) == 0:
             return 'Пары отсутствуют'
@@ -151,11 +157,8 @@ class Schedule:
                                                    lesson['lesson_type'])
             if lesson['lesson_classroom'] is not None:
                 output += ' | {0}'.format(lesson['lesson_classroom'])
-            if lesson['lesson_teacher'] is None:
+            if lesson['lesson_teacher'] is not None:
                 output += ' | {0}'.format(lesson['lesson_teacher'])
-            output += '\n'
-            
+            output += '\n\n'
             result += output
-
         return result
-

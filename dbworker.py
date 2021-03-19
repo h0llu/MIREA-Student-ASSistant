@@ -7,11 +7,11 @@ class Users:
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('DELETE FROM Users')
         cursor.execute('''CREATE TABLE IF NOT EXISTS Users
                     (id INTEGER NOT NULL PRIMARY KEY,
                     state INTEGER NOT NULL)
                     ''')
+        cursor.execute('DELETE FROM Users')
         con.commit()
 
     def set_state(self, user_id, state):
@@ -33,15 +33,46 @@ class Users:
         cursor.execute(f'SELECT * FROM Users WHERE id = {user_id}')
         return cursor.fetchone() is not None
 
+# Хранит последнюю запрошенную от каждого из пользователей
+class Schedule_last_request:
+    __path__ = 'Databases/Schedule.db'
+    def __init__(self):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS Schedule
+                       (user_id INTEGER NOT NULL PRIMARY KEY,
+                        last_group TEXT NOT NULL,
+                        last_group_col INTEGER NOT NULL)''')
+        con.commit()
+
+    def set_group(self, id, group, group_col):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute('INSERT OR REPLACE INTO Schedule VALUES (?,?,?)',
+        [id, group, group_col])
+        con.commit()
+
+    def get_group(self, id):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT last_group FROM Schedule WHERE user_id = {id}')
+        return cursor.fetchone()[0]
+
+    def get_col(self, id):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT last_group_col FROM Schedule WHERE user_id = {id}')
+        return cursor.fetchone()[0]
+
 # Хранит ID пользователя и группы, на которые он подписан
-class Users_subs:
-    __path__ = 'Databases/Users_subs.db'
+class Subs:
+    __path__ = 'Databases/Subs.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS Groups
-        (id INTEGER NOT NULL,
-        group TEXT NOT NULL)''')
+                       (id INTEGER NOT NULL,
+                        group_name TEXT NOT NULL)''')
         con.commit()
 
     def set_group(self, id, group):
@@ -53,14 +84,21 @@ class Users_subs:
     def get_groups(self, id):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'SELECT group FROM Groups WHERE id = {id}')
+        cursor.execute(f'SELECT group_name FROM Groups WHERE id = {id}')
         con.commit()
         return cursor.fetchall()
+
+    def is_subscribed(self, id, group):
+        con = sqlite3.connect(self.__path__)
+        cursor = con.cursor()
+        cursor.execute(f'SELECT 1 FROM Groups WHERE (id = {id} AND group_name = "{group}") limit 1')
+        return cursor.fetchone() is not None
+        
 
     def del_group(self, id, group):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute(f'DELETE FROM Groups WHERE ( id = {id} AND group = {group} )')
+        cursor.execute(f'DELETE FROM Groups WHERE (id = {id} AND group_name = "{group}")')
         con.commit()
 
 # Хранит имя преподавателя и его описание
@@ -127,3 +165,4 @@ class Victoria:
         cursor.execute('SELECT * FROM Victoria')
         con.commit()
         return cursor.fetchall()
+

@@ -12,10 +12,22 @@ class Keyboard:
         return markup
 
     # Кнопки расписания (дата по группе)
-    def group_date(self):
+    def group_date(self, is_subscribed):
         markup = telebot.types.ReplyKeyboardMarkup(True, False)
         markup.row('На сегодня', 'На завтра')
-        markup.row('Подписаться на группу')
+        if not is_subscribed:
+            markup.row('Подписаться на группу')
+        else:
+            markup.row('Отписаться от группы')
+        markup.row('Вернуться назад')
+        markup.row('Главное меню')
+        return markup
+
+    # подписки
+    def subs(self, groups):
+        markup = telebot.types.ReplyKeyboardMarkup(True, False)
+        for group in groups:
+            markup.row(group[0])
         markup.row('Вернуться назад')
         markup.row('Главное меню')
         return markup
