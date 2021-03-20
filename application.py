@@ -121,10 +121,11 @@ def group_timetable(msg):
             date = datetime.datetime.strptime(msg.text + '.2021', '%d.%m.%Y')
         except:
             bot.send_message(msg.from_user.id, 'Неверный ввод!')
-            group_date(group_name)
+            msg.text = group_name
+            group_date(msg)
             return
     weekday = date.weekday()
-    weektype = date.isocalendar()[1] % 2
+    weektype = (date.isocalendar()[1] + 1) % 2
     output = schedule.get_schedule(msg.from_user.id, weekday, weektype)
     bot.send_message(msg.chat.id, output)
 
@@ -143,7 +144,8 @@ def sub_timetable(msg):
                                    == States.S_SUB_TIMETABLE.value)
 def sub_group_date(msg):
     if subs_db.is_subscribed(msg.from_user.id, msg.text):
-        bot.send_message(msg.chat.id, 'Введите дату:', reply_markup=keyboard.group_date(True))
+        schedule.is_valid_group(msg.from_user.id, msg.text)
+        bot.send_message(msg.chat.id, 'Введите дату (dd.mm):', reply_markup=keyboard.group_date(True))
         users_db.set_state(msg.from_user.id, States.S_SUB_GROUP_DATE.value)
         
     else:
@@ -190,10 +192,11 @@ def sub_group_timetable(msg):
             date = datetime.datetime.strptime(msg.text + '.2021', '%d.%m.%Y')
         except:
             bot.send_message(msg.from_user.id, 'Неверный ввод!')
-            group_date(group_name)
+            msg.text = group_name
+            sub_group_date(msg)
             return
     weekday = date.weekday()
-    weektype = date.isocalendar()[1] % 2
+    weektype = (date.isocalendar()[1] + 1) % 2
     output = schedule.get_schedule(msg.from_user.id, weekday, weektype)
     bot.send_message(msg.chat.id, output)
 # _________________

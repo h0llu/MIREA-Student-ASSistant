@@ -1,5 +1,6 @@
-config.py
+__pycache__/
 Databases/
-**/__pycache__
 Excels/
+
 xlsx_paths
+config.py

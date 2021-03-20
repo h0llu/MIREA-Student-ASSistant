@@ -1,6 +1,7 @@
 import requests # запросы на сайт с расписанием
 import xlrd # парсинг .xlsx файлов
 import os # есть ли файл с такой группой
+import re
 from bs4 import BeautifulSoup # парсинг HTML-страницы с расписанием
 from dbworker import Schedule_last_request # для хранения последней запрошенной группы
 
@@ -121,15 +122,15 @@ class Schedule:
         lessons = []
 
         for i in range(weekday * 12 + 3, weekday * 12 + 15):
-            # находим соответствующую неделю и непустую ячейку
-            if sheet.cell_value(i, group_col) != '' and \
+            # находим соответствующую неделю и ячейку с парами
+            if re.match(r'^[А-Як1-9].*', sheet.cell_value(i, group_col)) and \
                 weektype == i % 2:
                 lesson = {}
                 lesson['lesson_order'] = ((i - 3) % 12) // 2 + 1
-                lesson['lesson_classroom'] = sheet.cell_value(i, group_col + 3).replace('\n', ' ')
-                lesson['lesson_type'] = sheet.cell_value(i, group_col + 1).replace('\n', ' ')
-                lesson['lesson_title'] = sheet.cell_value(i, group_col).replace('\n', ' ')
-                lesson['lesson_teacher'] = sheet.cell_value(i, group_col + 2).replace('\n', ' ')
+                lesson['lesson_classroom'] = sheet.cell_value(i, group_col + 3).replace('\n', '/')
+                lesson['lesson_type'] = sheet.cell_value(i, group_col + 1).replace('\n', '/')
+                lesson['lesson_title'] = sheet.cell_value(i, group_col).replace('\n', '/')
+                lesson['lesson_teacher'] = sheet.cell_value(i, group_col + 2).replace('\n', '/')
                 lessons.append(lesson)
         
         return lessons
