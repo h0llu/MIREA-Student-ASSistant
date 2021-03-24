@@ -1,1 +1,1 @@
-# mirea-bot-project
+# MIREA-Student-ASSistant
