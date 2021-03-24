@@ -19,13 +19,10 @@ class Schedule:
         ul = soup.find('ul', 'uk-switcher')
         bac = ul.contents[1]
 
-        # в файл записываются пути до всех .xlsx 
-        paths = open('xlsx_paths', 'w')
-        self.__download__(bac, paths)
-        paths.close()
+        self.__download__(bac)
 
     # сохраняет все .xlsx
-    def __download__(self, soup, paths):
+    def __download__(self, soup):
         # так как на сайте может быть расписание сессии
         # отберем только расписание занятий
         # для этого найдем все теги "Расписание занятий"
@@ -90,7 +87,6 @@ class Schedule:
                 new_name += '16'
 
             path = 'Excels/' + new_name + '.xlsx'
-            paths.write(path + '\n')
             f = open(path, 'wb')
             resp = requests.get(link)
             f.write(resp.content)

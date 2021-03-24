@@ -136,8 +136,11 @@ def group_timetable(msg):
 
 @bot.message_handler(func=lambda msg: msg.text == 'Расписание по подпискам')
 def sub_timetable(msg):
-    bot.send_message(msg.chat.id, 'Выберите группу:',
-    reply_markup=keyboard.subs(subs_db.get_groups(msg.from_user.id)))
+    if len(subs_db.get_groups(msg.from_user.id)) == 0:
+        bot.send_message(msg.chat.id, 'У вас нет подписок!', reply_markup=keyboard.standard())
+    else:
+        bot.send_message(msg.chat.id, 'Выберите группу из списка подписок:',
+        reply_markup=keyboard.subs(subs_db.get_groups(msg.from_user.id)))
     users_db.set_state(msg.from_user.id, States.S_SUB_TIMETABLE.value)
 
 @bot.message_handler(func=lambda msg: users_db.get_state(msg.from_user.id)
@@ -200,10 +203,10 @@ def sub_group_timetable(msg):
     output = schedule.get_schedule(msg.from_user.id, weekday, weektype)
     bot.send_message(msg.chat.id, output)
 # _________________
-# СКИДКИ В ВИКТОРИИ
+# ЕДА В ВИКТОРИИ
 # _________________
 
-@bot.message_handler(func=lambda msg: msg.text == 'Скидки в Виктории')
+@bot.message_handler(func=lambda msg: msg.text == 'Еда в Виктории')
 def discount(msg):
     # получить скидки с сайта, вывести в удобном виде только нужные
     # может, не только скидки, но и дешевая готовая еда (например, булки)

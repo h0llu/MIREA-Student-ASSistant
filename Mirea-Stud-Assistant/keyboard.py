@@ -5,7 +5,7 @@ class Keyboard:
     # Кнопки главного меню
     def start_menu(self):
         markup = telebot.types.ReplyKeyboardMarkup(True, False)
-        markup.row('Расписание', 'Скидки в Виктории')
+        markup.row('Расписание', 'Еда в Виктории')
         markup.row('Расписание по подпискам', 'Найти аудиторию')
         markup.row('Игры', 'Список полезных аудиторий')
         markup.row('Информация о преподавателях', 'Время пар')

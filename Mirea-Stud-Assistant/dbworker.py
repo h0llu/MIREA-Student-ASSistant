@@ -3,7 +3,7 @@ import sqlite3
 
 # Хранит ID пользователя и его состояние в дереве диалогов
 class Users:
-    __path__ = 'Databases/Users.db'
+    __path__ = 'Mirea-Stud-Assistant/Databases/Users.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
@@ -35,7 +35,7 @@ class Users:
 
 # Хранит последнюю запрошенную от каждого из пользователей
 class Schedule_last_request:
-    __path__ = 'Databases/Schedule.db'
+    __path__ = 'Mirea-Stud-Assistant/Databases/Schedule.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
@@ -66,7 +66,7 @@ class Schedule_last_request:
 
 # Хранит ID пользователя и группы, на которые он подписан
 class Subs:
-    __path__ = 'Databases/Subs.db'
+    __path__ = 'Mirea-Stud-Assistant/Databases/Subs.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
@@ -103,7 +103,7 @@ class Subs:
 
 # Хранит имя преподавателя и его описание
 class Professors:
-    __path__ = 'Databases/Professors.db'
+    __path__ = 'Mirea-Stud-Assistant/Databases/Professors.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
@@ -136,7 +136,7 @@ class Professors:
 
 # Хранит скидки (просто еду) из Виктории
 class Victoria:
-    __path__ = 'Databases/Victoria.db'
+    __path__ = 'Mirea-Stud-Assistant/Databases/Victoria.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
