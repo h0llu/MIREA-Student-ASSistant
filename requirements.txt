@@ -18,7 +18,7 @@ entrypoints==0.3
 et-xmlfile==1.0.1
 gpg===1.13.1-unknown
 h5py==3.1.0
-httplib2==0.14.0
+httplib2==0.19.0
 idna==2.8
 Keras==2.4.3
 keyring==18.0.1
