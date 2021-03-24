@@ -1,10 +1,10 @@
 import datetime
 import telebot
-from keyboard import Keyboard # Выкладки кнопок для разных узлов диалогов
-from config import TOKEN # Токен бота
-from config import States # Возможные состояния пользователей в дереве диалогов
-from schedule import Schedule # работа с расписанием
-import dbworker # Классы для работы с БД
+from Mirea_Stud_Assistant.keyboard import Keyboard # Выкладки кнопок для разных узлов диалогов
+from Mirea_Stud_Assistant.config import TOKEN # Токен бота
+from Mirea_Stud_Assistant.config import States # Возможные состояния пользователей в дереве диалогов
+from Mirea_Stud_Assistant.schedule import Schedule # работа с расписанием
+from Mirea_Stud_Assistant import dbworker # Классы для работы с БД
 
 bot = telebot.TeleBot(TOKEN)
 
