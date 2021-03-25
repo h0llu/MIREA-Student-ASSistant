@@ -18,4 +18,4 @@
 
 * Почитать отзывы о преподавателях и даже написать свой ;)
 
-![Скриншот главного меню](https://i.ibb.co/NKpxP8h/Main-Menu.jpg)
+<img src="https://i.ibb.co/NKpxP8h/Main-Menu.jpg" width="300">
