@@ -101,7 +101,7 @@ Username: @MIREA_best_bot
 
   <img src="https://i.ibb.co/TYDH32L/time-of-classes.jpg" width="250px">
 
-### Остались вопросы?
+## Остались вопросы?
 
 **~~Ну ты и придурок, конечно~~**
 
