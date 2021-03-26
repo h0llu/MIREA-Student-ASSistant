@@ -1,10 +1,11 @@
 import datetime
 import telebot
-from Mirea_Stud_Assistant.keyboard import Keyboard # Выкладки кнопок для разных узлов диалогов
-from Mirea_Stud_Assistant.config import TOKEN # Токен бота
-from Mirea_Stud_Assistant.config import States # Возможные состояния пользователей в дереве диалогов
-from Mirea_Stud_Assistant.schedule import Schedule # работа с расписанием
-from Mirea_Stud_Assistant import dbworker # Классы для работы с БД
+from keyboard import Keyboard # Выкладки кнопок для разных узлов диалогов
+from config import TOKEN # Токен бота
+from config import States # Возможные состояния пользователей в дереве диалогов
+from schedule import Schedule # работа с расписанием
+import dbworker # Классы для работы с БД
+
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -37,8 +38,8 @@ def come_back(msg):
         timetable(msg)
     elif state == States.S_SUB_TIMETABLE.value:
         sub_timetable(msg)
-    elif state == States.S_DISCOUNT.value:
-        discount(msg)
+    elif state == States.S_FOOD.value:
+        food(msg)
     elif state == States.S_GAMES.value:
         games(msg)
     elif state == States.S_RUN_GAMES.value:
@@ -53,8 +54,6 @@ def come_back(msg):
         professor(msg)
     elif state == States.S_PROFESSOR_NAME.value:
         professor_name(msg)
-    elif state == States.S_CLASSES_TIME.value:
-        classes_time(msg)
 
 # ___________
 # РАСПИСАНИЕ
@@ -207,11 +206,10 @@ def sub_group_timetable(msg):
 # _________________
 
 @bot.message_handler(func=lambda msg: msg.text == 'Еда в Виктории')
-def discount(msg):
-    # получить скидки с сайта, вывести в удобном виде только нужные
-    # может, не только скидки, но и дешевая готовая еда (например, булки)
-    bot.send_message(msg.chat.id, 'Их пока нет', reply_markup=keyboard.standard())
-    users_db.set_state(msg.from_user.id, States.S_DISCOUNT.value)
+def food(msg):
+    # получить еду с сайта, вывести в удобном виде
+    bot.send_message(msg.chat.id, 'На стадии разработки', reply_markup=keyboard.standard())
+    users_db.set_state(msg.from_user.id, States.S_FOOD.value)
 
 # _____
 # ИГРЫ
@@ -219,8 +217,10 @@ def discount(msg):
 
 @bot.message_handler(func=lambda msg: msg.text == 'Игры')
 def games(msg):
-    bot.send_message(msg.chat.id, 'Введите название игры:', reply_markup=keyboard.games_list())
-    users_db.set_state(msg.from_user.id, States.S_GAMES.value)
+    # bot.send_message(msg.chat.id, 'Введите название игры:', reply_markup=keyboard.games_list())
+    # users_db.set_state(msg.from_user.id, States.S_GAMES.value)
+
+    bot.send_message(msg.chat.id, 'На стадии разработки', reply_markup=keyboard.standard())
 
 @bot.message_handler(func=lambda msg: users_db.is_user(msg.from_user.id) and
                     users_db.get_state(msg.from_user.id) == States.S_GAMES.value)
@@ -239,14 +239,15 @@ def run_games(msg):
 
 @bot.message_handler(func=lambda msg: msg.text == 'Найти аудиторию')
 def find(msg):
-    bot.send_message(msg.chat.id, 'Введите номер аудитории:', reply_markup=keyboard.standard())
-    users_db.set_state(msg.from_user.id, States.S_FIND.value)
+    # bot.send_message(msg.chat.id, 'Введите номер аудитории:', reply_markup=keyboard.standard())
+    # users_db.set_state(msg.from_user.id, States.S_FIND.value)
+
+    bot.send_message(msg.chat.id, 'На стадии разработки', reply_markup=keyboard.standard())
 
 @bot.message_handler(func=lambda msg: users_db.get_state(msg.from_user.id)
                                    == States.S_FIND.value)
 def find_place(msg):
     # тут нужно найти аудиторию
-    # может, нарисовать карту
     users_db.set_state(msg.from_user.id, States.S_FIND_PLACE.value)
 
 # __________________________
@@ -256,7 +257,9 @@ def find_place(msg):
 @bot.message_handler(func=lambda msg: msg.text == 'Список полезных аудиторий')
 def useful(msg):
     # вывести заранее сделанный список полезных аудиторий
-    users_db.set_state(msg.from_user.id, States.S_USEFUL.value)
+    # users_db.set_state(msg.from_user.id, States.S_USEFUL.value)
+
+    bot.send_message(msg.chat.id, 'На стадии разработки', reply_markup=keyboard.standard())
 
 # ____________________________
 # ИНФОРМАЦИЯ О ПРЕПОДАВАТЕЛЯХ
@@ -264,16 +267,16 @@ def useful(msg):
 
 @bot.message_handler(func=lambda msg: msg.text == 'Информация о преподавателях')
 def professor(msg):
-    bot.send_message(msg.chat.id, '''Введите имя преподавателя в виде
-Иванов И.И.''', reply_markup=keyboard.standard())
-    users_db.set_state(msg.from_user.id, States.S_PROFESSOR.value)
+    # bot.send_message(msg.chat.id, '''Введите имя преподавателя в виде
+# Иванов И.И.''', reply_markup=keyboard.standard())
+    # users_db.set_state(msg.from_user.id, States.S_PROFESSOR.value)
+
+    bot.send_message(msg.chat.id, 'На стадии разработки', reply_markup=keyboard.standard())
 
 @bot.message_handler(func=lambda msg: users_db.get_state(msg.from_user.id)
                                    == States.S_PROFESSOR.value)
 def professor_name(msg):
     # вывод информации о преподавателе
-    # скорее всего, имеет смысл хранить такую информацию в таблице
-    # возможно, стоит добавить возможность добавления информации о преподавателях
     users_db.set_state(msg.from_user.id, States.S_PROFESSOR_NAME.value)
 
 # __________
@@ -289,7 +292,6 @@ def classes_time(msg):
 5 пара   16:20 - 17:50
 6 пара   18:00 - 19:30'''
     bot.send_message(msg.chat.id, time)
-    users_db.set_state(msg.from_user.id, States.S_CLASSES_TIME.value)
 
 
 bot.polling()

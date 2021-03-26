@@ -11,6 +11,11 @@ class Schedule:
     # удаляет уже имеющиеся файлы с расписанием
     # скачивает новые
     def update(self):
+        # создать директорию, если не существует
+        if not os.path.exists('Mirea_Stud_Assistant/Excels/'):
+            os.makedirs('Mirea_Stud_Assistant/Excels')
+
+
         page = requests.get('https://www.mirea.ru/schedule/')
         soup = BeautifulSoup(page.text, 'html.parser')
         
@@ -86,7 +91,7 @@ class Schedule:
             elif '5к' in link or '5 курс' in link:
                 new_name += '16'
 
-            path = 'Excels/' + new_name + '.xlsx'
+            path = 'Mirea_Stud_Assistant/Excels/' + new_name + '.xlsx'
             f = open(path, 'wb')
             resp = requests.get(link)
             f.write(resp.content)
@@ -97,7 +102,7 @@ class Schedule:
     # если нет, тогда либо нет такой группы
     # либо это тупые аспирантики, либо это группы-дубликаты (в разных корпусах с одним названием)
     def is_valid_group(self, user_id, group) -> bool:
-        path = f'Excels/{group[0]}{group[-2:]}.xlsx'
+        path = f'Mirea_Stud_Assistant/Excels/{group[0]}{group[-2:]}.xlsx'
         if not os.path.exists(path):
             return False
         sheet = xlrd.open_workbook(path).sheet_by_index(0)
@@ -109,7 +114,7 @@ class Schedule:
     
     # найти группу среди файлов
     def __find__(self, group, group_col, weekday, weektype):
-        sheet = xlrd.open_workbook(f'Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
+        sheet = xlrd.open_workbook(f'Mirea_Stud_Assistant/Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
         # на всякий случай проверим, верно ли введена группа
         assert group in str(sheet.cell_value(1, group_col)), \
                 f'{group} not in {str(sheet.cell_value(rowx=1, colx=group_col))}'
@@ -159,3 +164,4 @@ class Schedule:
             output += '\n\n'
             result += output
         return result
+

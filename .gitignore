@@ -1,6 +1,6 @@
 __pycache__/
 Databases/
 Excels/
+.vscode/
 
-xlsx_paths
 config.py
