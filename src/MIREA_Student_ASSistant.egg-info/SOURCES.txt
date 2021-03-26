@@ -1,0 +1,10 @@
+LICENSE
+MANIFEST.in
+README.md
+pyproject.toml
+requirements.txt
+setup.cfg
+src/MIREA_Student_ASSistant.egg-info/PKG-INFO
+src/MIREA_Student_ASSistant.egg-info/SOURCES.txt
+src/MIREA_Student_ASSistant.egg-info/dependency_links.txt
+src/MIREA_Student_ASSistant.egg-info/top_level.txt
