@@ -18,9 +18,7 @@
 
 * Почитать отзывы о преподавателях и даже написать свой ;)
 
-<div align="center">
 <img src="https://i.ibb.co/zRVkXhh/main-menu.jpg" width="250px">
-</div>
 
 ## Начало работы
 
@@ -48,9 +46,7 @@ Username: @MIREA_best_bot
 
  Вы можете подписаться на группу или отписаться от нее при наличии подписки. В дальнейшем это поможет не вводить название группы.
 
-<div align="center">
   <img src="https://i.ibb.co/b5FsHf5/Subscribe.jpg" width="250px">
-</div>
 
 Подписка позволяет легко получать расписание группы, всего лишь нажав на кнопку.
 
@@ -103,9 +99,7 @@ Username: @MIREA_best_bot
 
 Бот позволяет посмотреть время проведения занятий.
 
-<div align=center>
   <img src="https://i.ibb.co/TYDH32L/time-of-classes.jpg" width="250px">
-</div>
 
 ### Остались вопросы?
 
