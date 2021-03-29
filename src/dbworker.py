@@ -135,21 +135,23 @@ class Professors:
         return cursor.fetchone()[0]
 
 # Хранит скидки (просто еду) из Виктории
+# ==== нигде нет int, везде string
 class Victoria:
-    __path__ = 'src/Databases/Victoria.db'
+    __path__ = 'src\Database\Victoria.db'
     def __init__(self):
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS Victoria
                     (name TEXT NOT NULL PRIMARY KEY,
-                    price INTEGER NOT NULL,
-                    weight INTEGER NOT NULL)''')
+                    price STRING NOT EMPTY,
+                    sale STRING NOT EMPTY)''') # не вес, а скидка (sale))
         con.commit()
 
-    def set_food(self, name, price, weight):
+    def set_food(self, name, price, sale): # не вес, а скидка (sale))
         con = sqlite3.connect(self.__path__)
         cursor = con.cursor()
-        cursor.execute('INSERT OR REPLACE INTO Victoria VALUES (?,?,?)', [name, price, weight])
+        # - - - - - - - - - - - - - - -
+        cursor.execute('INSERT OR REPLACE INTO Victoria VALUES (?,?,?)', [name, price, sale]) # не вес, а скидка (sale))
         con.commit()
 
     def get_food(self, name):
