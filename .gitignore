@@ -1,8 +1,11 @@
+# Build
+.vscode/
+/build/
+dist/
+*.egg-info
 __pycache__/
+
+# Project
 Databases/
 Excels/
-.vscode/
-dist/
-build/
-
 config.py
