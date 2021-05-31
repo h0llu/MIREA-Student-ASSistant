@@ -12,13 +12,13 @@ class Schedule:
     # скачивает новые
     def update(self):
         # создать директорию, если не существует
-        if not os.path.exists('src/Excels/'):
-            os.makedirs('src/Excels')
+        if not os.path.exists("/home/h0llu/Everything/University/2 course/4 semester/TRPP/Project/src/Excels/"):
+            os.makedirs("/home/h0llu/Everything/University/2 course/4 semester/TRPP/Project/src/Excels")
 
 
         page = requests.get('https://www.mirea.ru/schedule/')
         soup = BeautifulSoup(page.text, 'html.parser')
-        
+
         # тег, содержащий в себе списки по разным формам обучения
         # будем обрабатывать только бакалавриат
         ul = soup.find('ul', 'uk-switcher')
@@ -91,7 +91,7 @@ class Schedule:
             elif '5к' in link or '5 курс' in link:
                 new_name += '16'
 
-            path = 'src/Excels/' + new_name + '.xlsx'
+            path = "/home/h0llu/Everything/University/2 course/4 semester/TRPP/Project/src/Excels/" + new_name + '.xlsx'
             f = open(path, 'wb')
             resp = requests.get(link)
             f.write(resp.content)
@@ -102,7 +102,7 @@ class Schedule:
     # если нет, тогда либо нет такой группы
     # либо это тупые аспирантики, либо это группы-дубликаты (в разных корпусах с одним названием)
     def is_valid_group(self, user_id, group) -> bool:
-        path = f'src/Excels/{group[0]}{group[-2:]}.xlsx'
+        path = f"/home/h0llu/Everything/University/2 course/4 semester/TRPP/Project/src/Excels/{group[0]}{group[-2:]}.xlsx"
         if not os.path.exists(path):
             return False
         sheet = xlrd.open_workbook(path).sheet_by_index(0)
@@ -114,7 +114,7 @@ class Schedule:
     
     # найти группу среди файлов
     def __find__(self, group, group_col, weekday, weektype):
-        sheet = xlrd.open_workbook(f'src/Excels/{group[0]}{group[-2:]}.xlsx').sheet_by_index(0)
+        sheet = xlrd.open_workbook(f"/home/h0llu/Everything/University/2 course/4 semester/TRPP/Project/src/Excels/{group[0]}{group[-2:]}.xlsx").sheet_by_index(0)
         # на всякий случай проверим, верно ли введена группа
         assert group in str(sheet.cell_value(1, group_col)), \
                 f'{group} not in {str(sheet.cell_value(rowx=1, colx=group_col))}'

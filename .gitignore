@@ -1,9 +1,10 @@
 # Build
-.vscode/
-/build/
+build/
 dist/
-*.egg-info
+doc/
+.vscode/
 __pycache__/
+*.egg-info
 
 # Project
 Databases/

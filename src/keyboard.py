@@ -2,11 +2,6 @@ import telebot
 
 # Класс для хранения всех кнопок в каждом из узлов дерева диалогов
 class Keyboard:
-    """Keyboard class
-
-    :param pr: param pararam
-    """    
-
     # Кнопки главного меню
     def start_menu(self):
         markup = telebot.types.ReplyKeyboardMarkup(True, False)
