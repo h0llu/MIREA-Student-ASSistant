@@ -69,6 +69,13 @@ def get_content(html):
         else: # скидки нет
             sale = ''
             price = item.find('div', class_='card-product__price').get_text(strip=True)
+        # ХАРДКОД ФИКСЫ ЕБУЧИХ ОБНОВЛЕНИЙ САЙТА ВИКТОРИИ
+        if '\t\t\t\t  ' in price:
+            price = price.replace('\t\t\t\t  ', '')
+        if '/' in price:
+            price = price.replace('/', ' ')
+        if '/' in sale:
+            sale = sale.replace('/', ' ')
         # добавление информации о товарах
         goods.append({
             'title': item.find('a', class_='card-product__title-link product-name').get_text(),
@@ -141,9 +148,10 @@ def parse_juice(url):
     # цена >= 80 руб -> удалить
     for good in goods:
         if (good.get('sale') == ''): # если скидки нет
-            temp = good.get('price')[:-2] # обрубить "Р." в конце
+            temp = good.get('price')[:-5] # обрубить "Р." в конце 2
         else: # есть скидка на товар
-            temp = good.get('sale')[:-2] # обрубить "Р." в конце
+            temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
+        temp = temp.replace(',', '.')
         if (float(temp) >= 80): #############################################################################
             # удалить элемент
             good.clear()
@@ -184,9 +192,10 @@ def parse_gas(url):
             'Sprite сильногазированный' in good.get('title') or \
             'Fanta Апельсин' in good.get('title'):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
+            temp = temp.replace(',', '.')
             if (float(temp) >= 70):
                 # удалить элемент
                 good.clear()
@@ -254,9 +263,10 @@ def parse_tea(url):
         if ('Lipton' in good.get('title') or 'FuzeTea' in good.get('title')) and \
             ('0,5' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
+            temp = temp.replace(',', '.')
             if (float(temp) >= 90):
                 # удалить элемент
                 good.clear()
@@ -321,9 +331,9 @@ def parse_water(url):
         if ('Вода питьевая Святой Источник негазированная, 0,5 л' in good.get('title')) or \
             ('Вода питьевая Святой Источник газированная, 0,5 л' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
         else:
             good.clear()
 
@@ -410,9 +420,9 @@ def parse_energy(url):
             ('Burn' in good.get('title')) or \
             ('Adrenaline Rush Абсолютная Энергия' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
         else:
             good.clear()
 
@@ -503,9 +513,10 @@ def parse_chips(url):
         if ("Lay's" in good.get('title')) or \
             ('Хрусteam' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2 
+            temp = temp.replace(',', '.')
             if (float(temp) >= 80):
                 # удалить элемент
                 good.clear()
@@ -570,10 +581,11 @@ def parse_chocobars(url):
             ('Snickers' in good.get('title')) or \
             ('Twix' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
             # удалить те, что дороже 60 руб
+            temp = temp.replace(',', '.')
             if (float(temp) >= 60):
                 # удалить элемент
                 good.clear()
@@ -645,9 +657,10 @@ def parse_bread(url):
             ('Слоёночка' in good.get('title')) or \
             ('Кекс' in good.get('title')):
             if (good.get('sale') == ''): # если скидки нет
-                temp = good.get('price')[:-2] # обрубить "Р." в конце
+                temp = good.get('price')[:-5] # обрубить "Р." в конце 2
             else: # есть скидка на товар
-                temp = good.get('sale')[:-2] # обрубить "Р." в конце
+                temp = good.get('sale')[:-5] # обрубить "Р." в конце 2
+            temp = temp.replace(',', '.')
             # удалить те, что дороже 60 руб
             if (float(temp) >= 60):
                 # удалить элемент
