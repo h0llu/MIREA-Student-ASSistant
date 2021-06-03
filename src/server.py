@@ -223,6 +223,22 @@ def write_desc(msg):
 # Поиск аудитории
 # ________________
 
+# ________________
+# Поиск аудитории
+# ________________
+@bot.callback_query_handler(func=lambda call: d(call.data).get('h') == 'search')
+def search(call):
+    states.set_state(call.from_user.id, 'Search')
+    bot.edit_message_text('Введите две аудитории через пробел', call.from_user.id,
+        call.message.message_id, reply_markup=keyboard.basic())
+    
+@bot.message_handler(func=lambda msg: states.get_state(msg.from_user.id) == 'Search')
+def route(msg):
+    bot.delete_message(msg.message_id)
+    bot.delete_message(msg.message_id - 1)
+
+    bot.send_message(msg.chat.id, my_func(msg.text.split(' ')))
+
 
 # __________________________
 # Список полезных аудиторий
