@@ -10,4 +10,3 @@ __pycache__/
 db/
 xlsx/
 outdated/
-config.py
