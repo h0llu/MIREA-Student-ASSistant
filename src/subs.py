@@ -6,22 +6,23 @@ import db
 
 def init() -> None:
     stmt = """CREATE TABLE IF NOT EXISTS subs
-        (group_id INTEGER PRIMARY KEY,
+        (user_id INTEGER,
         group_name TEXT)"""
     db.execute_stmt(stmt)
 
-def set_group(group_id: int, group_name: str) -> None:
-    db.insert('subs', {'group_id': group_id, 'group_name': group_name})
+def set_group(user_id: int, group_name: str) -> None:
+    db.insert('subs', {'user_id': user_id, 'group_name': group_name})
 
-def get_groups(group_id: int) -> List[Dict]:
-    stmt = f'SELECT group_name FROM subs WHERE group_id={group_id}'
-    return db.fetchall(stmt)
+def get_groups(user_id: int) -> List[Dict]:
+    stmt = f'SELECT group_name FROM subs WHERE user_id={user_id}'
+    groups = db.fetchall(stmt)
+    return [group[0] for group in groups]
 
-def del_group(group_id: int, group_name: str) -> None:
-    stmt = f'DELETE FROM Groups WHERE (group_id = {group_id} AND group_name = "{group_name}")'
+def del_group(user_id: int, group_name: str) -> None:
+    stmt = f'DELETE FROM subs WHERE (user_id = {user_id} AND group_name = "{group_name}")'
     db.execute_stmt(stmt)
 
-def is_subscribed(group_id: int, group_name: str) -> None:
-    stmt = f'''SELECT 1 FROM Groups WHERE (group_id = {group_id}
+def is_subscribed(user_id: int, group_name: str) -> None:
+    stmt = f'''SELECT 1 FROM subs WHERE (user_id = {user_id}
         AND group_name = "{group_name}") limit 1'''
     return db.fetchone(stmt) is not None

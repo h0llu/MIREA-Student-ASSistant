@@ -3,26 +3,39 @@ from typing import List, NamedTuple
 
 import db
 
-class Professor(NamedTuple):
-    """Структура преподавателя"""
-    name: str
-    description: List[str]
 
+def init() -> None:
+    """Создать изначальную таблицу"""
+    stmt = '''CREATE TABLE IF NOT EXISTS professors
+        (name TEXT,
+        description TEXT)'''
+    db.execute_stmt(stmt)
 
-def get_description(name: str) -> Professor:
+def get_descriptions(name: str) -> List[str]:
     """Получить все описания по преподавателю"""
-    profs = db.fetchall(f'SELECT description FROM professors WHERE professor={name}')
-    return Professor(name, [prof[0] for prof in profs])
+    profs = db.fetchall(f'SELECT description FROM professors WHERE name="{name}"')
+    return [prof[0] for prof in profs]
 
-def add_description(name: str, description: str) -> None:
-    """Добавить описание преподавателю"""
+def add_name(name: str) -> None:
+    """Добавить временное имя"""
     db.insert('professors', {
-        'professor': name,
+        'name': name,
+        'description': 'Temp'
+    })
+
+def add_description(description: str) -> None:
+    """Добавить описание преподавателю"""
+    stmt = 'SELECT name FROM professors WHERE description="Temp"'
+    name = db.fetchone(stmt)[0]
+    stmt = 'DELETE FROM professors WHERE description="Temp"'
+    db.execute_stmt(stmt)
+    db.insert('professors', {
+        'name': name,
         'description': description
     })
 
 def get_professors() -> List[str]:
     """Возвращает имена всех преподавателей"""
-    profs = db.fetchall('SELECT professor FROM professors')
-
-    return [prof[0] for prof in profs]
+    profs = db.fetchall('SELECT name FROM professors')
+    
+    return list(set([prof[0] for prof in profs]))

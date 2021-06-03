@@ -1,10 +1,10 @@
 """Работа с состояниями пользователей в диалоге
-'none': ввод игнорируется
-'group': ввод группы
-'from': ввод первой аудитории (откуда)
-'to': ввод второй аудитории (куда)
-'name': ввод имени препода
-'description': ввод описания препода"""
+'None': ввод игнорируется
+'Group': ввод группы
+'From': ввод первой аудитории (откуда)
+'To': ввод второй аудитории (куда)
+'Name': ввод имени препода
+'Description': ввод описания препода"""
 import db
 
 
@@ -18,7 +18,7 @@ def init() -> None:
 def get_state(user_id: int) -> str:
     stmt = f'SELECT state FROM states WHERE id={user_id}'
     state = db.fetchone(stmt)
-    return state[0] if state is not None else 'none'
+    return state[0] if state is not None else 'None'
 
 def set_state(user_id: int, state: str) -> None:
     db.insert('states', {'id': user_id, 'state': state})
