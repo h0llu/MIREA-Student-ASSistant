@@ -1,7 +1,7 @@
 """Непосредственно запускаемый сервер бота"""
 from os import stat
 from typing import Dict
-import flask
+from flask import Flask, request
 import json
 import telebot
 import os
