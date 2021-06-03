@@ -5,8 +5,3 @@ doc/
 .vscode/
 __pycache__/
 *.egg-info
-
-# Project
-db/
-xlsx/
-outdated/

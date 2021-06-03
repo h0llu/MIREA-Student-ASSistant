@@ -22,7 +22,6 @@ def d(obj: str) -> Dict:
 
 bot = telebot.TeleBot(TOKEN)
 schedule.update_schedule()
-food.update_vic()
 professors.init()
 food.init()
 states.init()
