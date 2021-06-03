@@ -242,9 +242,6 @@ def audience_list(call):
 
 def main():
     if 'HEROKU' in list(os.environ.keys()):
-        logger = telebot.logger
-        telebot.logger.setLevel(logging.INFO)
-
         server = Flask(__name__)
         @server.route('/bot', methods=['POST'])
         def getMessage():
