@@ -1,11 +1,9 @@
-import os
-
 from typing import Dict, List, Tuple
 import sqlite3
 
 
 def insert(table:str, col_values: Dict):
-    conn = sqlite3.connect(os.path.abspath('db/mirea.db'))
+    conn = sqlite3.connect('mirea.db')
     cursor = conn.cursor()
     
     columns = ', '.join(col_values.keys())
@@ -20,7 +18,7 @@ def insert(table:str, col_values: Dict):
 
 
 def fetchone(stmt: str) -> Tuple:
-    conn = sqlite3.connect(os.path.abspath('db/mirea.db'))
+    conn = sqlite3.connect('mirea.db')
     cursor = conn.cursor()
     
     cursor.execute(stmt)
@@ -28,7 +26,7 @@ def fetchone(stmt: str) -> Tuple:
 
 
 def fetchall(stmt: str) -> List[Tuple]:
-    conn = sqlite3.connect(os.path.abspath('db/mirea.db'))
+    conn = sqlite3.connect('mirea.db')
     cursor = conn.cursor()
     
     cursor.execute(stmt)
@@ -36,7 +34,7 @@ def fetchall(stmt: str) -> List[Tuple]:
 
 
 def delete(table: str, row_id: int) -> None:
-    conn = sqlite3.connect(os.path.abspath('db/mirea.db'))
+    conn = sqlite3.connect('mirea.db')
     cursor = conn.cursor()
     
     row_id = int(row_id)
@@ -45,7 +43,7 @@ def delete(table: str, row_id: int) -> None:
 
 
 def execute_stmt(stmt: str, values: List = []) -> None:
-    conn = sqlite3.connect(os.path.abspath('db/mirea.db'))
+    conn = sqlite3.connect('mirea.db')
     cursor = conn.cursor()
     
     cursor.execute(stmt, values)
