@@ -28,7 +28,7 @@ class Weekday(NamedTuple):
 
 def get_schedule(group_name: str, day: int, week: int) -> Weekday:
     sheet = xlrd.open_workbook(
-        f'{os.path.abspath("xlsx")}/{group_name[0]}{group_name[-2:]}.xlsx').sheet_by_index(0)
+        f'xlsx/{group_name[0]}{group_name[-2:]}.xlsx').sheet_by_index(0)
     # колонка с группой
     column = None
     for col in range(0, sheet.ncols):
@@ -50,7 +50,7 @@ def is_valid_group(group_name: str) -> bool:
     """Есть ли такая группа в скачанных файлах"""
     if group_name is None:
         return False
-    path = f'{os.path.abspath("xlsx")}/{group_name[0]}{group_name[-2:]}.xlsx'
+    path = f'xlsx/{group_name[0]}{group_name[-2:]}.xlsx'
     if not os.path.exists(path):
         return False
     sheet = xlrd.open_workbook(path).sheet_by_index(0)
@@ -92,9 +92,9 @@ def output(weekday: Weekday) -> str:
 
 def update_schedule() -> None:
     """Удалить старые файлы, загрузить новые"""
-    if os.path.exists(os.path.abspath('xlsx')):
-        shutil.rmtree(os.path.abspath('xlsx'))
-    os.makedirs(os.path.abspath('xlsx'))
+    if os.path.exists('xlsx'):
+        shutil.rmtree('xlsx')
+    os.makedirs('xlsx')
 
     page = requests.get('https://www.mirea.ru/schedule/')
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -160,7 +160,7 @@ def download_schedule(soup) -> None:
         elif '5к' in link or '5 курс' in link:
             new_name += '16'
         # сохраним все найденные файлы в директории xlsx/
-        path = os.path.abspath('xlsx') + '/' + new_name + '.xlsx'
+        path = 'xlsx' + '/' + new_name + '.xlsx'
         f = open(path, 'wb')
         resp = requests.get(link)
         f.write(resp.content)
