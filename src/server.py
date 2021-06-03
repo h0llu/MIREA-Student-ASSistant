@@ -21,7 +21,6 @@ def d(obj: str) -> Dict:
 
 
 bot = telebot.TeleBot(TOKEN)
-schedule.update_schedule()
 professors.init()
 food.init()
 states.init()
@@ -250,7 +249,7 @@ def main():
         @server.route('/')
         def webhook():
             bot.remove_webhook()
-            bot.set_webhook(url='https://murmuring-savannah-80214.herokuapp.com/bot')
+            bot.set_webhook(url='https://mirea-assistant-bit.herokuapp.com/bot')
             return '?', 200
         server.run(host='0.0.0.0', port=os.environ.get('PORT', 80))
     else:
