@@ -1,8 +1,10 @@
 """Непосредственно запускаемый сервер бота"""
 from os import stat
 from typing import Dict
+import flask
 import json
 import telebot
+import os
 
 from config import TOKEN
 import food
@@ -19,17 +21,14 @@ def d(obj: str) -> Dict:
 
 
 bot = telebot.TeleBot(TOKEN)
+schedule.update_schedule()
+food.update_vic()
 professors.init()
 food.init()
 states.init()
 subs.init()
 
 
-
-# @bot.message_handler()
-# @bot.callback_query_handler(func=lambda call: True)
-# def test(msg):
-    # print(msg.message_id)
 
 # __________________
 # Информация о боте
@@ -242,4 +241,25 @@ def audience_list(call):
 
 
 
-bot.polling()
+def main():
+    if 'HEROKU' in list(os.environ.keys()):
+        logger = telebot.logger
+        telebot.logger.setLevel(logging.INFO)
+
+        server = Flask(__name__)
+        @server.route('/bot', methods=['POST'])
+        def getMessage():
+            bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode('utf-8'))])
+            return '!', 200
+        @server.route('/')
+        def webhook():
+            bot.remove_webhook()
+            bot.set_webhook(url='https://murmuring-savannah-80214.herokuapp.com/bot')
+            return '?', 200
+        server.run(host='0.0.0.0', port=os.environ.get('PORT', 80))
+    else:
+        bot.remove_webhook()
+        bot.polling()
+
+if __name__ == '__main__':
+    main()

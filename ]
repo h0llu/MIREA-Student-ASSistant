@@ -1,0 +1,7 @@
+FROM python:3.8
+
+WORKDIR /home
+RUN pip3 install -U xlrd pytelegrambotapi bs4 flask && apt update && apt install sqlite3
+ADD . /src/
+
+CMD [ 'python', '/src/server.py' ]
