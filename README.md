@@ -1,4 +1,4 @@
-# MIREA-Student-ASSistant
+# MIREA-Student-Assistant
 
 Телеграм-бот, оказывающий помощь студентам МИРЭА
 
